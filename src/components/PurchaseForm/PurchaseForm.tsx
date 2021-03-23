@@ -1,7 +1,7 @@
-import React, {useContext } from 'react';
+import React, {useContext, useState } from 'react';
 import {BuyStatus, Purchase} from '../../data/types';
 import {CurrentUserContext} from '../Context';
-import { USERS } from '../../data/api/data';
+import { USERS, GAMES } from '../../data/api/data';
 import { UserInfo } from '../../data/types';
 
 interface PurchaseFormProps {
@@ -11,12 +11,11 @@ interface PurchaseFormProps {
 }
 
 export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
+    const [ showInvite, setShowInvite ] = useState(false);
     const currentUser = useContext(CurrentUserContext);
     const userId = `user${currentUser?.id}`;
     const userIdLabel = `user${currentUser?.id}Label`;
     const inviteRef = React.useRef<HTMLFormElement>(null);
-
-    console.log('users', USERS);
 
     let friendsIds: number[] | undefined;
     let friendsList: UserInfo[] = [];
@@ -34,25 +33,19 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
     })
 
     const invitationForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // можно рендерить через state
-        // и условный рендеринг,
-        // но тогда рендерятся сразу все формы инвайта
 
         // shouldComponentUpdate?..
 
-        if (inviteRef.current?.getAttribute('hidden') == '' || null) {
-            inviteRef.current?.removeAttribute('hidden');
-        } else {
+        if (showInvite) {
+            setShowInvite(false);
             inviteRef.current?.reset();
-            inviteRef.current?.setAttribute('hidden', '');
+        } else {
+            setShowInvite(true);
         }
     }
 
     const renderNextEmail = (e: React.FormEvent<HTMLInputElement>) => {
         if (e.currentTarget.nextSibling?.nodeName !== 'INPUT') {
-
-            // const num = e.currentTarget.getAttribute('id')?.slice(5);
-            // let intNum: Number = Number.parseInt(num);
 
             // можно сгенерировать нормальный айдишник с порядковым номером
 
@@ -76,7 +69,9 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                     friendsList.map((friend, index) => (
                         <li key={index}>
                             <label>
-                                <input type="checkbox" data-testid={'user' + (friend.id)} />
+                                <input type="checkbox" data-testid={'user' + (friend.id)} 
+                                    { ...friend.age && value.game.restrictions?.minAge && (friend.age < value.game.restrictions?.minAge ) && 'disabled' } 
+                                />
                                 {friend.name}
                             </label>
                         </li>
@@ -89,19 +84,24 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 Invite friends
             </label>
 
-            <form ref={inviteRef} className="invite" hidden data-testid="invite">
-                <input type="email" id="email0" data-testid="email0" onChange={renderNextEmail} />
-                <div>
-                    <input type="checkbox" id="acknowledgeInvite" data-testid="acknowledgeInvite" />
-                    <label htmlFor="acknowledgeInvite">I acknowledge that Game Market invitation emails will be sent to specified emails. The game will become available to the person only onсe the registration in the Game Market is completed.</label>
-                </div>
+            {
+                showInvite &&
+                <form ref={inviteRef} className="invite" data-testid="invite">
+                    <input type="email" id="email0" data-testid="email0" onChange={renderNextEmail} />
+                    <div>
+                        <input type="checkbox" id="acknowledgeInvite" data-testid="acknowledgeInvite" />
+                        <label htmlFor="acknowledgeInvite">I acknowledge that Game Market invitation emails will be sent to specified emails. The game will become available to the person only onсe the registration in the Game Market is completed.</label>
+                    </div>
 
-                <div>
-                    <input type="checkbox" id="acknowledgeInviteAge" data-testid="acknowledgeInviteAge" />
-                    <label htmlFor="acknowledgeInviteAge">I acknowledge that the game has age restriction and might be unavailable if a person is under required age.</label>
-                </div>
-            </form>
-
+                    {
+                        value.game.restrictions &&
+                        <div>
+                            <input type="checkbox" id="acknowledgeInviteAge" data-testid="acknowledgeInviteAge" />
+                            <label htmlFor="acknowledgeInviteAge">I acknowledge that the game has age restriction and might be unavailable if a person is under required age.</label>
+                        </div>
+                    }
+                </form>
+            }
         </div>
     );
 }
