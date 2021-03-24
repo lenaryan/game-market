@@ -47,159 +47,159 @@ const renderPurchaseForm = (props: Partial<ComponentProps<typeof PurchaseForm>> 
 describe('PurchaseForm', () => {
     const value = {game: GAME_WITH_AGE_RESTRICTION};
 
-    // describe('General', () => {
-    //     it('render current user checkbox', async () => {
-    //         const {findByTestId} = renderPurchaseForm({value});
+    describe('General', () => {
+        it('render current user checkbox', async () => {
+            const {findByTestId} = renderPurchaseForm({value});
 
-    //         expect(await findByTestId(`user${USER.id}`)).toBeInTheDocument();
-    //     });
+            expect(await findByTestId(`user${USER.id}`)).toBeInTheDocument();
+        });
 
-    //     it('render "(me)" nearby current user', async () => {
-    //         const {findByTestId} = renderPurchaseForm({value});
+        it('render "(me)" nearby current user', async () => {
+            const {findByTestId} = renderPurchaseForm({value});
 
-    //         expect(await findByTestId(`user${USER.id}Label`)).toHaveTextContent('(me)');
-    //     });
+            expect(await findByTestId(`user${USER.id}Label`)).toHaveTextContent('(me)');
+        });
 
-    //     it('render friend checkboxes', async () => {
-    //         const {findByTestId} = renderPurchaseForm({value});
+        it('render friend checkboxes', async () => {
+            const {findByTestId} = renderPurchaseForm({value});
 
-    //         for (const id of FRIEND_IDS) {
-    //             expect(await findByTestId(`user${id}`)).toBeInTheDocument();
-    //         }
-    //     });
+            for (const id of FRIEND_IDS) {
+                expect(await findByTestId(`user${id}`)).toBeInTheDocument();
+            }
+        });
 
-    //     it('render invite checkbox without form', async () => {
-    //         const {findByTestId, queryByTestId} = renderPurchaseForm({value});
+        it('render invite checkbox without form', async () => {
+            const {findByTestId, queryByTestId} = renderPurchaseForm({value});
 
-    //         expect(await findByTestId(`showInvite`)).toBeInTheDocument();
-    //         expect(queryByTestId(`invite`)).not.toBeInTheDocument();
-    //     });
+            expect(await findByTestId(`showInvite`)).toBeInTheDocument();
+            expect(queryByTestId(`invite`)).not.toBeInTheDocument();
+        });
 
-    //     it('render single email input (by default)', async () => {
-    //         const {getByTestId} = renderPurchaseForm({value});
+        it('render single email input (by default)', async () => {
+            const {getByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(getByTestId(`showInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(getByTestId(`showInvite`));
+            });
 
-    //         expect(within(getByTestId('invite')).getByTestId(`email0`)).toBeInTheDocument();
-    //         expect(within(getByTestId('invite')).queryByTestId(`email1`)).not.toBeInTheDocument();
-    //     });
+            expect(within(getByTestId('invite')).getByTestId(`email0`)).toBeInTheDocument();
+            expect(within(getByTestId('invite')).queryByTestId(`email1`)).not.toBeInTheDocument();
+        });
 
-    //     it('render second email input after the first is specified', async () => {
-    //         const {getByTestId, findByTestId} = renderPurchaseForm({value});
+        it('render second email input after the first is specified', async () => {
+            const {getByTestId, findByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(getByTestId(`showInvite`));
-    //             fireEvent.change(await findByTestId(`email0`), {target: {value: '1'}});
-    //         });
+            await act(async () => {
+                fireEvent.click(getByTestId(`showInvite`));
+                fireEvent.change(await findByTestId(`email0`), {target: {value: '1'}});
+            });
 
-    //         expect(within(getByTestId('invite')).getByTestId(`email1`)).toBeInTheDocument();
-    //     });
+            expect(within(getByTestId('invite')).getByTestId(`email1`)).toBeInTheDocument();
+        });
 
-    //     it('render "acknowledge" checkbox', async () => {
-    //         const {getByTestId} = renderPurchaseForm({value});
+        it('render "acknowledge" checkbox', async () => {
+            const {getByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(getByTestId(`showInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(getByTestId(`showInvite`));
+            });
 
-    //         expect(within(getByTestId('invite')).getByTestId(`acknowledgeInvite`)).toBeInTheDocument();
-    //     });
+            expect(within(getByTestId('invite')).getByTestId(`acknowledgeInvite`)).toBeInTheDocument();
+        });
 
-    //     it('allows to enter the first email address', async () => {
-    //         const {findByTestId, getByTestId} = renderPurchaseForm({value});
+        it('allows to enter the first email address', async () => {
+            const {findByTestId, getByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //             fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+                fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
+            });
 
-    //         expect((getByTestId(`email0`) as HTMLInputElement).value).toEqual(EMAIL0);
-    //     });
+            expect((getByTestId(`email0`) as HTMLInputElement).value).toEqual(EMAIL0);
+        });
 
-    //     it('allows to enter two email addresses', async () => {
-    //         const {findByTestId, getByTestId} = renderPurchaseForm({value});
+        it('allows to enter two email addresses', async () => {
+            const {findByTestId, getByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //             fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
-    //             fireEvent.change(await findByTestId(`email1`), {target: {value: EMAIL1}});
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+                fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
+                fireEvent.change(await findByTestId(`email1`), {target: {value: EMAIL1}});
+            });
 
-    //         expect((getByTestId(`email0`) as HTMLInputElement).value).toEqual(EMAIL0);
-    //         expect((getByTestId(`email1`) as HTMLInputElement).value).toEqual(EMAIL1);
-    //     });
+            expect((getByTestId(`email0`) as HTMLInputElement).value).toEqual(EMAIL0);
+            expect((getByTestId(`email1`) as HTMLInputElement).value).toEqual(EMAIL1);
+        });
 
-    //     it('returns emails', async () => {
-    //         const onChange = jest.fn();
-    //         const {findByTestId} = renderPurchaseForm({value, onChange});
+        it('returns emails', async () => {
+            const onChange = jest.fn();
+            const {findByTestId} = renderPurchaseForm({value, onChange});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //             fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+                fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
+            });
 
-    //         expect(onChange).toBeCalledWith({...value, emails: [EMAIL0]});
+            expect(onChange).toBeCalledWith({...value, emails: [EMAIL0]});
 
-    //         await act(async () => {
-    //             fireEvent.change(await findByTestId(`email1`), {target: {value: EMAIL1}});
-    //         });
+            await act(async () => {
+                fireEvent.change(await findByTestId(`email1`), {target: {value: EMAIL1}});
+            });
 
-    //         expect(onChange).toBeCalledWith({...value, emails: [EMAIL0, EMAIL1]});
-    //     });
+            expect(onChange).toBeCalledWith({...value, emails: [EMAIL0, EMAIL1]});
+        });
 
-    //     it('returns "acknowledge" value', async () => {
-    //         const onChange = jest.fn();
-    //         const {findByTestId} = renderPurchaseForm({value, onChange});
+        it('returns "acknowledge" value', async () => {
+            const onChange = jest.fn();
+            const {findByTestId} = renderPurchaseForm({value, onChange});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //             fireEvent.click(await findByTestId(`acknowledgeInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+                fireEvent.click(await findByTestId(`acknowledgeInvite`));
+            });
 
-    //         expect(onChange).toBeCalledWith({...value, acknowledgeInvite: true});
+            expect(onChange).toBeCalledWith({...value, acknowledgeInvite: true});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`acknowledgeInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`acknowledgeInvite`));
+            });
 
-    //         expect(onChange).toBeCalledWith({...value, acknowledgeInvite: false});
-    //     });
+            expect(onChange).toBeCalledWith({...value, acknowledgeInvite: false});
+        });
 
-    //     it('resets invite on unselect "invite friends"', async () => {
-    //         const onChange = jest.fn();
-    //         const {findByTestId} = renderPurchaseForm({value, onChange});
+        it('resets invite on unselect "invite friends"', async () => {
+            const onChange = jest.fn();
+            const {findByTestId} = renderPurchaseForm({value, onChange});
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //             fireEvent.click(await findByTestId(`user${MAX_AGE_USER_ID}`));
-    //             fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
-    //             fireEvent.click(await findByTestId(`acknowledgeInvite`));
-    //             fireEvent.click(await findByTestId(`acknowledgeInviteAge`));
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+                fireEvent.click(await findByTestId(`user${MAX_AGE_USER_ID}`));
+                fireEvent.change(await findByTestId(`email0`), {target: {value: EMAIL0}});
+                fireEvent.click(await findByTestId(`acknowledgeInvite`));
+                fireEvent.click(await findByTestId(`acknowledgeInviteAge`));
+            });
 
-    //         expect(onChange).toBeCalledWith({
-    //             ...value,
-    //             userIds: [MAX_AGE_USER_ID],
-    //             emails: [EMAIL0],
-    //             acknowledgeInvite: true,
-    //             acknowledgeInviteAge: true,
-    //         });
+            expect(onChange).toBeCalledWith({
+                ...value,
+                userIds: [MAX_AGE_USER_ID],
+                emails: [EMAIL0],
+                acknowledgeInvite: true,
+                acknowledgeInviteAge: true,
+            });
 
-    //         await act(async () => {
-    //             fireEvent.click(await findByTestId(`showInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(await findByTestId(`showInvite`));
+            });
 
-    //         expect(onChange).toBeCalledWith({
-    //             ...value,
-    //             userIds: [MAX_AGE_USER_ID],
-    //             emails: [],
-    //             acknowledgeInvite: false,
-    //             acknowledgeInviteAge: false,
-    //         });
-    //     });
-    // });
+            expect(onChange).toBeCalledWith({
+                ...value,
+                userIds: [MAX_AGE_USER_ID],
+                emails: [],
+                acknowledgeInvite: false,
+                acknowledgeInviteAge: false,
+            });
+        });
+    });
 
     describe('Game with age restriction', () => {
         const value = {game: GAME_WITH_AGE_RESTRICTION};
@@ -389,48 +389,48 @@ describe('PurchaseForm', () => {
         });
     });
 
-    // describe('Game without age restriction', () => {
-    //     const value = {game: GAME_WITHOUT_AGE_RESTRICTION};
+    describe('Game without age restriction', () => {
+        const value = {game: GAME_WITHOUT_AGE_RESTRICTION};
 
-    //     it('allow to select all users', async () => {
-    //         const USER_IDS = [USER.id, ...FRIEND_IDS];
-    //         const onChange = jest.fn();
-    //         const {findByTestId} = renderPurchaseForm({value, onChange});
+        it('allow to select all users', async () => {
+            const USER_IDS = [USER.id, ...FRIEND_IDS];
+            const onChange = jest.fn();
+            const {findByTestId} = renderPurchaseForm({value, onChange});
 
-    //         await act(async () => {
-    //             for (let USER_ID of USER_IDS) {
-    //                 fireEvent.click(await findByTestId(`user${USER_ID}`));
-    //             }
-    //         });
+            await act(async () => {
+                for (let USER_ID of USER_IDS) {
+                    fireEvent.click(await findByTestId(`user${USER_ID}`));
+                }
+            });
 
-    //         expect(onChange).toBeCalledWith({...value, userIds: USER_IDS});
-    //     });
+            expect(onChange).toBeCalledWith({...value, userIds: USER_IDS});
+        });
 
-    //     it('do not render any disclaimers nearby users', async () => {
-    //         const USER_IDS = [USER.id, ...FRIEND_IDS];
-    //         const {findByTestId, queryByTestId} = renderPurchaseForm({value});
+        it('do not render any disclaimers nearby users', async () => {
+            const USER_IDS = [USER.id, ...FRIEND_IDS];
+            const {findByTestId, queryByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             for (let USER_ID of USER_IDS) {
-    //                 fireEvent.click(await findByTestId(`user${USER_ID}`));
-    //             }
-    //         });
+            await act(async () => {
+                for (let USER_ID of USER_IDS) {
+                    fireEvent.click(await findByTestId(`user${USER_ID}`));
+                }
+            });
 
-    //         USER_IDS.forEach((USER_ID) => {
-    //             expect(queryByTestId(`user${USER_ID}noAge`)).not.toBeInTheDocument();
-    //             expect(queryByTestId(`user${USER_ID}incorrectAge`)).not.toBeInTheDocument();
-    //         });
-    //     });
+            USER_IDS.forEach((USER_ID) => {
+                expect(queryByTestId(`user${USER_ID}noAge`)).not.toBeInTheDocument();
+                expect(queryByTestId(`user${USER_ID}incorrectAge`)).not.toBeInTheDocument();
+            });
+        });
 
-    //     it('do not render "acknowledge age" checkbox', async () => {
-    //         const {getByTestId} = renderPurchaseForm({value});
+        it('do not render "acknowledge age" checkbox', async () => {
+            const {getByTestId} = renderPurchaseForm({value});
 
-    //         await act(async () => {
-    //             fireEvent.click(getByTestId(`showInvite`));
-    //         });
+            await act(async () => {
+                fireEvent.click(getByTestId(`showInvite`));
+            });
 
-    //         expect(within(getByTestId('invite')).getByTestId(`acknowledgeInvite`)).toBeInTheDocument();
-    //         expect(within(getByTestId('invite')).queryByTestId(`acknowledgeInviteAge`)).not.toBeInTheDocument();
-    //     });
-    // });
+            expect(within(getByTestId('invite')).getByTestId(`acknowledgeInvite`)).toBeInTheDocument();
+            expect(within(getByTestId('invite')).queryByTestId(`acknowledgeInviteAge`)).not.toBeInTheDocument();
+        });
+    });
 });
