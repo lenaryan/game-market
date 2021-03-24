@@ -13,8 +13,6 @@ interface PurchaseFormProps {
 export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
     const [ showInvite, setShowInvite ] = useState(false);
     const currentUser = useContext(CurrentUserContext);
-    const userId = `user${currentUser?.id}`;
-    const userIdLabel = `user${currentUser?.id}Label`;
     const inviteRef = React.useRef<HTMLFormElement>(null);
 
     let friendsIds: number[] | undefined;
@@ -61,8 +59,12 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         <div>
             <ul>
                 <li>
-                    <input type="checkbox" id={userId} data-testid={userId} />
-                    <label id={userIdLabel} data-testid={userIdLabel} htmlFor={userId}>{currentUser?.name} (me)</label>
+                    <label id={ 'user' + currentUser?.id + 'Label' } data-testid={ 'user' + currentUser?.id + 'Label' }>
+                        <input type="checkbox" data-testid={ 'user' + currentUser?.id }
+                            { ...currentUser?.age && value.game.restrictions?.minAge && (currentUser?.age < value.game.restrictions?.minAge ) && 'disabled' } 
+                        />
+                        {currentUser?.name} (me)
+                    </label>
                 </li>
 
                 {
