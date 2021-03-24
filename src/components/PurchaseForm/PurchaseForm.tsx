@@ -61,10 +61,14 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 <li>
                     <label id={ 'user' + currentUser?.id + 'Label' } data-testid={ 'user' + currentUser?.id + 'Label' }>
                         <input type="checkbox" data-testid={ 'user' + currentUser?.id }
-                            { ...currentUser?.age && value.game.restrictions?.minAge && (currentUser?.age < value.game.restrictions?.minAge ) && 'disabled' } 
+                            disabled={ currentUser?.age && value.game.restrictions?.minAge && (currentUser?.age < value.game.restrictions?.minAge) ? true : false }
                         />
                         {currentUser?.name} (me)
                     </label>
+                    {
+                        currentUser?.age && value.game.restrictions?.minAge && ( currentUser?.age < value.game.restrictions?.minAge ) &&
+                        <p data-testid={ 'user' + currentUser?.id  + 'incorrectAge' }>incorrect age</p>
+                    }
                 </li>
 
                 {
@@ -72,10 +76,24 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                         <li key={index}>
                             <label>
                                 <input type="checkbox" data-testid={'user' + (friend.id)} 
-                                    { ...friend.age && value.game.restrictions?.minAge && (friend.age < value.game.restrictions?.minAge ) && 'disabled' } 
+                                    disabled={ 
+                                        (!friend?.age) ||
+                                        (friend?.age && 
+                                        value.game.restrictions?.minAge && 
+                                        (friend?.age < value.game.restrictions?.minAge)) ? 
+                                        true : false 
+                                    }
                                 />
                                 {friend.name}
                             </label>
+                            {
+                                friend?.age && value.game.restrictions?.minAge && ( friend?.age < value.game.restrictions?.minAge ) &&
+                                <p data-testid={ 'user' + friend?.id  + 'incorrectAge' }>incorrect age</p>
+                            }
+                            {
+                                !friend?.age &&
+                                <p data-testid={ 'user' + friend?.id  + 'noAge' }>age not specified</p>
+                            }
                         </li>
                     ))
                 }
