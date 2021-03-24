@@ -1,0 +1,34 @@
+.disclaimer {
+    color: red;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.people {
+    padding: 0;
+    list-style-type: none;
+}
+
+.check {
+    margin-bottom: 10px;
+    display: block;
+}
+
+.check input[type="checkbox"],
+.acknowledge input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.email {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 3px 5px;
+    box-sizing: border-box;
+}
+
+.acknowledge {
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: block;
+    line-height: 1.4;
+}

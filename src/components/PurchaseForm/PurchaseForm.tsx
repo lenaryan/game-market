@@ -1,8 +1,9 @@
 import React, {useContext, useState } from 'react';
 import {BuyStatus, Purchase} from '../../data/types';
 import {CurrentUserContext} from '../Context';
-import { USERS, GAMES } from '../../data/api/data';
+import { USERS } from '../../data/api/data';
 import { UserInfo } from '../../data/types';
+import './PurchaseForm.css';
 
 interface PurchaseFormProps {
     value: Purchase;
@@ -30,6 +31,9 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     })
 
+    // nah, it's not sorting :/
+    let sortedFriends: UserInfo[] = friendsList.sort((a: UserInfo, b: UserInfo) => +(b.name < a.name))
+
     const invitationForm = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         // shouldComponentUpdate?..
@@ -49,7 +53,9 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
 
             const newInput = document.createElement("input");
             newInput.setAttribute('type', 'email');
+            newInput.setAttribute('class', 'email');
             newInput.setAttribute('data-testid', 'email1');
+            newInput.setAttribute('placeholder', 'friend\'s e-mail');
 
             e.currentTarget.after(newInput);
         }
@@ -57,9 +63,9 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
 
     return (
         <div>
-            <ul>
-                <li>
-                    <label id={ 'user' + currentUser?.id + 'Label' } data-testid={ 'user' + currentUser?.id + 'Label' }>
+            <ul className="people">
+                <li className="check">
+                    <label data-testid={ 'user' + currentUser?.id + 'Label' }>
                         <input type="checkbox" data-testid={ 'user' + currentUser?.id }
                             disabled={ currentUser?.age && value.game.restrictions?.minAge && (currentUser?.age < value.game.restrictions?.minAge) ? true : false }
                         />
@@ -67,14 +73,14 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                     </label>
                     {
                         currentUser?.age && value.game.restrictions?.minAge && ( currentUser?.age < value.game.restrictions?.minAge ) &&
-                        <p data-testid={ 'user' + currentUser?.id  + 'incorrectAge' }>incorrect age</p>
+                        <p className="disclaimer" data-testid={ 'user' + currentUser?.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                     }
                 </li>
 
                 {
-                    friendsList.map((friend, index) => (
-                        <li key={index}>
-                            <label>
+                    sortedFriends.map((friend, index) => (
+                        <li key={index} className="check">
+                            <label data-testid={ 'user' + friend?.id + 'Label' }>
                                 <input type="checkbox" data-testid={'user' + (friend.id)} 
                                     disabled={ 
                                         (!friend?.age) ||
@@ -88,18 +94,18 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                             </label>
                             {
                                 friend?.age && value.game.restrictions?.minAge && ( friend?.age < value.game.restrictions?.minAge ) &&
-                                <p data-testid={ 'user' + friend?.id  + 'incorrectAge' }>incorrect age</p>
+                                <p className="disclaimer" data-testid={ 'user' + friend?.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                             }
                             {
                                 !friend?.age &&
-                                <p data-testid={ 'user' + friend?.id  + 'noAge' }>age not specified</p>
+                                <p className="disclaimer" data-testid={ 'user' + friend?.id  + 'noAge' }>Cannot be selected unless user's age is specified, because the game has age restriction</p>
                             }
                         </li>
                     ))
                 }
             </ul>
 
-            <label>
+            <label className="check">
                 <input type="checkbox" data-testid="showInvite" onChange={invitationForm} />
                 Invite friends
             </label>
@@ -107,17 +113,21 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
             {
                 showInvite &&
                 <form ref={inviteRef} className="invite" data-testid="invite">
-                    <input type="email" id="email0" data-testid="email0" onChange={renderNextEmail} />
+                    <input className="email" type="email" id="email0" data-testid="email0" onChange={renderNextEmail} placeholder="friend's e-mail" />
                     <div>
-                        <input type="checkbox" id="acknowledgeInvite" data-testid="acknowledgeInvite" />
-                        <label htmlFor="acknowledgeInvite">I acknowledge that Game Market invitation emails will be sent to specified emails. The game will become available to the person only onсe the registration in the Game Market is completed.</label>
+                        <label className="acknowledge">
+                            <input type="checkbox" data-testid="acknowledgeInvite" required />
+                            I acknowledge that Game Market invitation emails will be sent to specified emails. The game will become available to the person only onсe the registration in the Game Market is completed.
+                        </label>
                     </div>
 
                     {
                         value.game.restrictions &&
                         <div>
-                            <input type="checkbox" id="acknowledgeInviteAge" data-testid="acknowledgeInviteAge" />
-                            <label htmlFor="acknowledgeInviteAge">I acknowledge that the game has age restriction and might be unavailable if a person is under required age.</label>
+                            <label className="acknowledge">
+                                <input type="checkbox" data-testid="acknowledgeInviteAge" required />
+                                I acknowledge that the game has age restriction and might be unavailable if a person is under required age.
+                            </label>
                         </div>
                     }
                 </form>
