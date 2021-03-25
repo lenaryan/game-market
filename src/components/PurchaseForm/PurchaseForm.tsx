@@ -33,8 +33,11 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     })
 
-    // nah, it's not sorting :/
-    let sortedFriends: UserInfo[] = friendsList.sort((a: UserInfo, b: UserInfo) => +(b.name < a.name))
+    let sortedFriends: UserInfo[] = friendsList.sort((a: UserInfo, b: UserInfo) => {
+        if (b.name < a.name) return 1;
+        else if (b.name >= a.name) return -1;
+        return 0;
+    })
 
     const invitationForm = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -72,7 +75,7 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
             setCurrentAgeDisclaimer(false);
         }
 
-        if (currentUser?.age && value.game.restrictions?.minAge && ( currentUser?.age < value.game.restrictions?.minAge )) {
+        if (currentUser?.age && value.game.restrictions?.minAge && ( currentUser.age < value.game.restrictions.minAge )) {
             setCurrentDisclaimer(true);
             e.currentTarget.checked = false;
         } else {
@@ -106,22 +109,22 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                             <label data-testid={ 'user' + friend?.id + 'Label' }>
                                 <input type="checkbox" data-testid={'user' + (friend.id)} 
                                     disabled={ 
-                                        (!friend?.age) ||
+                                        (!friend?.age && value.game.restrictions?.minAge) ||
                                         (friend?.age && 
                                         value.game.restrictions?.minAge && 
-                                        (friend?.age < value.game.restrictions?.minAge)) ? 
+                                        (friend.age < value.game.restrictions.minAge)) ? 
                                         true : false 
                                     }
                                 />
                                 {friend.name}
                             </label>
                             {
-                                friend?.age && value.game.restrictions?.minAge && ( friend?.age < value.game.restrictions?.minAge ) &&
-                                <p className="disclaimer" data-testid={ 'user' + friend?.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
+                                friend?.age && value.game.restrictions?.minAge && ( friend.age < value.game.restrictions.minAge ) &&
+                                <p className="disclaimer" data-testid={ 'user' + friend.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                             }
                             {
                                 !friend?.age && value.game.restrictions?.minAge &&
-                                <p className="disclaimer" data-testid={ 'user' + friend?.id  + 'noAge' }>Cannot be selected unless user's age is specified, because the game has age restriction</p>
+                                <p className="disclaimer" data-testid={ 'user' + friend.id  + 'noAge' }>Cannot be selected unless user's age is specified, because the game has age restriction</p>
                             }
                         </li>
                     ))
