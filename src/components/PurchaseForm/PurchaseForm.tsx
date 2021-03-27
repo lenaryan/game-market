@@ -1,5 +1,5 @@
 import React, {useContext, useState } from 'react';
-import {BuyStatus, Purchase} from '../../data/types';
+import {BuyStatus, Purchase, UserShortInfo} from '../../data/types';
 import {CurrentUserContext} from '../Context';
 import { USERS } from '../../data/api/data';
 import { UserInfo } from '../../data/types';
@@ -13,8 +13,7 @@ interface PurchaseFormProps {
 
 export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
     const [ showInvite, setShowInvite ] = useState(false);
-    const [ currentDisclaimer, setCurrentDisclaimer ] = useState(false);
-    const [ currentAgeDisclaimer, setCurrentAgeDisclaimer ] = useState(false);
+    const [ disclaimerId, setDisclaimerId ] = useState(0);
     const currentUser = useContext(CurrentUserContext);
     const inviteRef = React.useRef<HTMLFormElement>(null);
 
@@ -67,20 +66,16 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     }
 
-    const showCurrentDisclaimer = (e: React.FormEvent<HTMLInputElement>) => {
-        if (!currentUser?.age && value.game.restrictions?.minAge) {
-            setCurrentAgeDisclaimer(true);
-            e.currentTarget.checked = false;
-        } else {
-            setCurrentAgeDisclaimer(false);
-        }
-
-        if (currentUser?.age && value.game.restrictions?.minAge && ( currentUser.age < value.game.restrictions.minAge )) {
-            setCurrentDisclaimer(true);
-            e.currentTarget.checked = false;
-        } else {
-            setCurrentDisclaimer(false);
-        }
+    const setDisclaimer = (e: React.FormEvent<HTMLInputElement>, user: UserInfo | UserShortInfo | undefined) => {
+        if (user) {
+            setDisclaimerId(user.id);
+            if (
+                (user?.age && value.game.restrictions?.minAge && ( user.age < value.game.restrictions.minAge )) ||
+                (!user?.age && value.game.restrictions?.minAge) 
+            ) {
+                e.currentTarget.checked = false;
+            }
+        }   
     }
 
     return (
@@ -89,16 +84,18 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 <li className="check">
                     <label data-testid={ 'user' + currentUser?.id + 'Label' }>
                         <input type="checkbox" data-testid={ 'user' + currentUser?.id }
-                            onClick={ showCurrentDisclaimer }
+                            onClick={ (e) => setDisclaimer(e, currentUser) }
                         />
                         {currentUser?.name} (me)
                     </label>
                     {
-                        currentDisclaimer &&
+                        (disclaimerId == currentUser?.id) &&
+                        (currentUser?.age) &&
                         <p className="disclaimer" data-testid={ 'user' + currentUser?.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                     }
                     {
-                        currentAgeDisclaimer &&
+                        (disclaimerId == currentUser?.id) &&
+                        (!currentUser?.age && value.game.restrictions?.minAge) &&
                         <p className="disclaimer" data-testid={ 'user' + currentUser?.id  + 'noAge' }>Cannot be selected unless user's age is specified, because the game has age restriction</p>
                     }
                 </li>
@@ -108,21 +105,17 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                         <li key={index} className="check">
                             <label data-testid={ 'user' + friend?.id + 'Label' }>
                                 <input type="checkbox" data-testid={'user' + (friend.id)} 
-                                    disabled={ 
-                                        (!friend?.age && value.game.restrictions?.minAge) ||
-                                        (friend?.age && 
-                                        value.game.restrictions?.minAge && 
-                                        (friend.age < value.game.restrictions.minAge)) ? 
-                                        true : false 
-                                    }
+                                    onClick={ (e) => setDisclaimer(e, friend) }
                                 />
                                 {friend.name}
                             </label>
                             {
+                                (disclaimerId == friend.id) && 
                                 friend?.age && value.game.restrictions?.minAge && ( friend.age < value.game.restrictions.minAge ) &&
                                 <p className="disclaimer" data-testid={ 'user' + friend.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                             }
                             {
+                                (disclaimerId == friend.id) &&
                                 !friend?.age && value.game.restrictions?.minAge &&
                                 <p className="disclaimer" data-testid={ 'user' + friend.id  + 'noAge' }>Cannot be selected unless user's age is specified, because the game has age restriction</p>
                             }
