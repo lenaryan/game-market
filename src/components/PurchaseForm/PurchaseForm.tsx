@@ -14,8 +14,8 @@ interface PurchaseFormProps {
 export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
     const [ showInvite, setShowInvite ] = useState(false);
     const [ disclaimerId, setDisclaimerId ] = useState(0);
+    const [ renderSecondEmail, setRenderSecondEmail ] = useState(false);
     const currentUser = useContext(CurrentUserContext);
-    const inviteRef = React.useRef<HTMLFormElement>(null);
 
     let friendsIds: number[] | undefined;
     let friendsList: UserInfo[] = [];
@@ -38,31 +38,41 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         return 0;
     })
 
-    const invitationForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-
-        // shouldComponentUpdate или useEffect, чтобы избежать ререндера?..
-
+    const invitationForm = () => {
         if (showInvite) {
+            const emails = Array.from(document.getElementsByClassName('email'))
+            emails.forEach(emailField => {
+                emailField.textContent = '';
+            });
             setShowInvite(false);
-            inviteRef.current?.reset();
         } else {
             setShowInvite(true);
         }
     }
 
     const renderNextEmail = (e: React.FormEvent<HTMLInputElement>) => {
-        if (e.currentTarget.nextSibling?.nodeName !== 'INPUT') {
+        if (!renderSecondEmail) {
+            setRenderSecondEmail(true);
+        }
+        const emails = Array.from(document.getElementsByClassName('email'))
+        let emailsList: string[] = [];
+            emails.forEach(emailField => {
+                if ((emailField as HTMLInputElement).value) emailsList.push((emailField as HTMLInputElement).value);
+            });
+        onChange({...value, emails: [...emailsList]})
 
-            let num: string = String(e.currentTarget.dataset.testid).slice(5);
-            let order: number = parseInt(num);
-
-            const newInput = document.createElement("input");
-            newInput.setAttribute('type', 'email');
-            newInput.setAttribute('class', 'email');
-            newInput.setAttribute('data-testid', `email${++order}`);
-            newInput.setAttribute('placeholder', 'friend\'s e-mail');
-
-            e.currentTarget.after(newInput);
+        if (currentUser && friendsIds) {
+            if (!value.game.restrictions?.minAge) {
+                onChange({...value, emails: [...emailsList], userIds: [currentUser.id, ...friendsIds]})
+            } else {
+                let selectableFriends: UserInfo[] = [];
+                if (friendsList) {
+                    selectableFriends = friendsList.filter(friend => friend.age >= value.game.restrictions.minAge)
+                }
+                let selectableFriendsIds: number[] = [];
+                selectableFriends.forEach(friend => selectableFriendsIds.push(friend.id))
+                onChange({...value, emails: [...emailsList], userIds: [currentUser.id, ...selectableFriendsIds]})
+            }
         }
     }
 
@@ -74,12 +84,41 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 (!user?.age && value.game.restrictions?.minAge) 
             ) {
                 e.currentTarget.checked = false;
+            } else if (currentUser && friendsIds) {
+                if (!value.game.restrictions?.minAge) {
+                    onChange({...value, userIds: [currentUser.id, ...friendsIds]})
+                }
+                if (value.game.restrictions?.minAge && user?.age && ( user.age >= value.game.restrictions.minAge )) {
+                    let selectableFriends: UserInfo[] = [];
+                    if (friendsList) {
+                        selectableFriends = friendsList.filter(friend => friend.age >= value.game.restrictions.minAge)
+                    }
+                    let selectableFriendsIds: number[] = [];
+                    selectableFriends.forEach(friend => selectableFriendsIds.push(friend.id))
+                    onChange({...value, userIds: [currentUser.id, ...selectableFriendsIds]})
+                }
             }
         }   
     }
 
+    const acknowledgeInviteClick = (e: React.FormEvent<HTMLInputElement>) => {
+        if (e.currentTarget.checked) {
+            onChange({...value, acknowledgeInvite: true})
+        } else {
+            onChange({...value, acknowledgeInvite: false})
+        }
+    }
+
+    const acknowledgeInviteAgeClick = (e: React.FormEvent<HTMLInputElement>) => {
+        if (e.currentTarget.checked) {
+            onChange({...value, acknowledgeInviteAge: true})
+        } else {
+            onChange({...value, acknowledgeInviteAge: false})
+        }
+    }
+
     return (
-        <div>
+        <form>
             <ul className="people">
                 <li className="check">
                     <label data-testid={ 'user' + currentUser?.id + 'Label' }>
@@ -103,7 +142,7 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 {
                     sortedFriends.map((friend, index) => (
                         <li key={index} className="check">
-                            <label data-testid={ 'user' + friend?.id + 'Label' }>
+                            <label data-testid={ 'user' + friend?.id }>
                                 <input type="checkbox" data-testid={'user' + (friend.id)} 
                                     onClick={ (e) => setDisclaimer(e, friend) }
                                 />
@@ -131,11 +170,15 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
 
             {
                 showInvite &&
-                <form ref={inviteRef} className="invite" data-testid="invite">
+                <div className="invite" data-testid="invite">
                     <input className="email" type="email" id="email0" data-testid="email0" onChange={renderNextEmail} placeholder="friend's e-mail" />
+                    {
+                        renderSecondEmail &&
+                        <input className="email" type="email" id="email1" data-testid="email1" onChange={renderNextEmail} placeholder="friend's e-mail" />
+                    }
                     <div>
                         <label className="acknowledge">
-                            <input type="checkbox" data-testid="acknowledgeInvite" required />
+                            <input type="checkbox" data-testid="acknowledgeInvite" required onClick={acknowledgeInviteClick} />
                             I acknowledge that Game Market invitation emails will be sent to specified emails. The game will become available to the person only onсe the registration in the Game Market is completed.
                         </label>
                     </div>
@@ -144,13 +187,13 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                         value.game.restrictions &&
                         <div>
                             <label className="acknowledge">
-                                <input type="checkbox" data-testid="acknowledgeInviteAge" required />
+                                <input type="checkbox" data-testid="acknowledgeInviteAge" required onClick={acknowledgeInviteAgeClick} />
                                 I acknowledge that the game has age restriction and might be unavailable if a person is under required age.
                             </label>
                         </div>
                     }
-                </form>
+                </div>
             }
-        </div>
+        </form>
     );
 }
