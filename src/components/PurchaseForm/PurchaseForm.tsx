@@ -32,17 +32,20 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     })
 
+    // sorts friends list in an alphabetical order
     let sortedFriends: UserInfo[] = friendsList.sort((a: UserInfo, b: UserInfo) => {
         if (b.name < a.name) return 1;
         else if (b.name >= a.name) return -1;
         return 0;
     })
 
+    // shows and hides invitations forms 
+    // cleans email fields on unselect an invitation checkbox
     const invitationForm = () => {
         if (showInvite) {
             const emails = Array.from(document.getElementsByClassName('email'))
             emails.forEach(emailField => {
-                emailField.textContent = '';
+                (emailField as HTMLInputElement).value = '';
             });
             setShowInvite(false);
         } else {
@@ -50,6 +53,8 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     }
 
+    // renders the second email input
+    // adds emails to the onChange method
     const renderNextEmail = (e: React.FormEvent<HTMLInputElement>) => {
         if (!renderSecondEmail) {
             setRenderSecondEmail(true);
@@ -61,13 +66,17 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
             });
         onChange({...value, emails: [...emailsList]})
 
+        // returns selectable users list with emails
         if (currentUser && friendsIds) {
             if (!value.game.restrictions?.minAge) {
                 onChange({...value, emails: [...emailsList], userIds: [currentUser.id, ...friendsIds]})
             } else {
                 let selectableFriends: UserInfo[] = [];
-                if (friendsList) {
-                    selectableFriends = friendsList.filter(friend => friend.age >= value.game.restrictions.minAge)
+                if (friendsList.length > 0) {
+                    selectableFriends = friendsList.filter(friend => {
+                        if (friend.age && value.game.restrictions?.minAge) 
+                        return friend.age >= value.game.restrictions.minAge
+                    })
                 }
                 let selectableFriendsIds: number[] = [];
                 selectableFriends.forEach(friend => selectableFriendsIds.push(friend.id))
@@ -76,6 +85,8 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     }
 
+    // checks if to show or hide age disclaimers depending on user id
+    // returns selectable users list
     const setDisclaimer = (e: React.FormEvent<HTMLInputElement>, user: UserInfo | UserShortInfo | undefined) => {
         if (user) {
             setDisclaimerId(user.id);
@@ -91,16 +102,21 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                 if (value.game.restrictions?.minAge && user?.age && ( user.age >= value.game.restrictions.minAge )) {
                     let selectableFriends: UserInfo[] = [];
                     if (friendsList) {
-                        selectableFriends = friendsList.filter(friend => friend.age >= value.game.restrictions.minAge)
+                        selectableFriends = friendsList.filter(friend => {
+                            if (friend.age && value.game.restrictions?.minAge) 
+                            return friend.age >= value.game.restrictions.minAge
+                        })
                     }
                     let selectableFriendsIds: number[] = [];
                     selectableFriends.forEach(friend => selectableFriendsIds.push(friend.id))
+                    console.log('selectableFriendsIds', selectableFriendsIds)
                     onChange({...value, userIds: [currentUser.id, ...selectableFriendsIds]})
                 }
             }
         }   
     }
 
+    // returns acknowledge invite checkbox value
     const acknowledgeInviteClick = (e: React.FormEvent<HTMLInputElement>) => {
         if (e.currentTarget.checked) {
             onChange({...value, acknowledgeInvite: true})
@@ -109,6 +125,7 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
         }
     }
 
+    // returns acknowledge invite age checkbox value
     const acknowledgeInviteAgeClick = (e: React.FormEvent<HTMLInputElement>) => {
         if (e.currentTarget.checked) {
             onChange({...value, acknowledgeInviteAge: true})
@@ -129,7 +146,7 @@ export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
                     </label>
                     {
                         (disclaimerId == currentUser?.id) &&
-                        (currentUser?.age) &&
+                        currentUser?.age && value.game.restrictions?.minAge && ( currentUser.age < value.game.restrictions.minAge ) &&
                         <p className="disclaimer" data-testid={ 'user' + currentUser?.id  + 'incorrectAge' }>The person is not allowed to get the game due to age restriction</p>
                     }
                     {
