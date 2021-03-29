@@ -11,6 +11,11 @@ interface PurchaseFormProps {
     buyStatus?: BuyStatus;
 }
 
+// Speaking of tests:
+// I couldn't really understand what's going on with tests,
+// where I needed user ids:
+// like... I rendered friends checkboxes, but tests were still looking for friends ids...
+
 export function PurchaseForm({value, buyStatus, onChange}: PurchaseFormProps) {
     const [ showInvite, setShowInvite ] = useState(false);
     const [ disclaimerId, setDisclaimerId ] = useState(0);
